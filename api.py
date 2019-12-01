@@ -6,6 +6,7 @@ from bson.json_util import dumps
 import requests
 from src.mongo import connectCollection, stop_existence, stop_not_existence,get_name
 from src.nltk import analyzer,get_text
+from src.recommender import get_users_mod, get_messages_user, similarities_matrix,recommendations
 
 # collections
 db, chats = connectCollection('API', 'chats')
@@ -26,6 +27,14 @@ def user_creator(userName):
 
     return (f'Welcome {userName}!. Your id is {new_id}')
 
+@get('/users')
+def get_users():
+    '''Get all the users and its ids'''
+
+    return dumps(users.find({},
+                            {'_id': 0, 'idUser': 1,
+                             'userName': 1}))
+
 @get('/users/<userName>')
 def get_userid(userName):
     '''Get the user id for the user name specified'''
@@ -36,6 +45,16 @@ def get_userid(userName):
     return dumps(users.find({'userName': userName},
                             {'_id': 0, 'idUser': 1,
                              'userName': 1}))
+
+@get('/users/<userName>/recommend')
+def user_recommender(userName):
+    '''Return the 3 most similar users'''
+
+    # user must exist in the collection 
+    stop_not_existence(userName, 'userName', users)
+    similarities = similarities_matrix()
+    top3 = recommendations(userName,similarities)
+    return top3
 
 # chat endpoints
 @post('/chat/create')
@@ -78,9 +97,23 @@ def get_messages(idChat):
     stop_not_existence(idChat, 'idChat', chats)
 
     return dumps(messages.find({'idChat': idChat},
+                               {'datetime':1,'_id':0,'userName':1,
+                               'idMessage':1,'text':1})
+                               .sort('idMessage',ASCENDING))
+
+@get('/messages/<idUser>')
+def get_messages(idUser):
+    '''Get all messages from the specified chat'''
+
+    idUser = int(idUser)
+    # user must exist in the collection 
+    stop_not_existence(idUser, 'idUser', users)
+
+    return dumps(messages.find({'idUser': idUser},
                                {'datetime':1,'_id':0,
-                               'userName':1,'idMessage':1,
-                               'text':1}).sort('idMessage',ASCENDING))
+                               'idChat':1,'userName':1,
+                               'idMessage':1,'text':1})
+                               .sort('idMessage',ASCENDING))
 
 @get('/chat/<idChat>/sentiment')
 def mood_analyzer(idChat):
