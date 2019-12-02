@@ -6,12 +6,13 @@ from src.mongo import connectCollection
 db, messages = connectCollection('API', 'messages')
 
 
-def get_text(idChat):
+def get_text(id,field):
     '''Returns a string with the text of all the message 
     from the specified chat'''
     
-    idChat = int(idChat)
-    text_messages = messages.find({'idChat': idChat}).sort('idMessage',ASCENDING)
+    id = int(id)
+    
+    text_messages = messages.find({field: id})
     text = ''
 
     for e in text_messages:

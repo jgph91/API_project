@@ -4,6 +4,7 @@ from pymongo import MongoClient,ASCENDING
 from bottle import request, response, post, get, run, route
 from bson.json_util import dumps
 import requests
+import json
 from src.mongo import connectCollection, stop_existence, stop_not_existence,get_name
 from src.nltk import analyzer,get_text
 from src.recommender import get_users_mod, get_messages_user, similarities_matrix,recommendations
@@ -19,7 +20,7 @@ def user_creator(userName):
     '''Create a user and save into DB'''
 
     # user can't be already created
-    stop_existence(userName, 'userName', users)
+    stop_existence(userName,'userName', users)
     #assigning a new id
     new_id = users.distinct("idUser")[-1] + 1
     db.users.insert_one({'idUser': new_id,
@@ -46,14 +47,28 @@ def get_userid(userName):
                             {'_id': 0, 'idUser': 1,
                              'userName': 1}))
 
+@get('users/<idUser>/sentiment')
+def mood_analyzer_user(idUser):
+    '''Analyze messages for a chat using NLTK's sentiment.'''
+
+    # user must be already created
+    stop_not_existence(idUser,'idUser', users)
+
+    text = get_text(idUser,'idUser')
+    mood = analyzer(text)
+    
+    return mood
+
 @get('/users/<userName>/recommend')
 def user_recommender(userName):
     '''Return the 3 most similar users'''
-
+    
     # user must exist in the collection 
     stop_not_existence(userName, 'userName', users)
+
     similarities = similarities_matrix()
     top3 = recommendations(userName,similarities)
+    top3 = top3.to_json()
     return top3
 
 # chat endpoints
@@ -70,9 +85,9 @@ def add_message(idChat, idUser):
     '''Add a message to the conversation.'''
 
     # user must be already created
-    stop_not_existence(idUser, 'idUser', users)
+    stop_not_existence(idUser,'idUser', users)
     # chat must be already created
-    stop_not_existence(idChat, 'idChat', chats)
+    stop_not_existence(idChat,'idChat', chats)
 
     #text entered via params
     dict(request.forms)
@@ -89,25 +104,25 @@ def add_message(idChat, idUser):
 
     return (f'Your message has been inserted sucessfully!')
 
-@get('/messages/<idChat>')
+@get('/messages/chat/<idChat>')
 def get_messages(idChat):
     '''Get all messages from the specified chat'''
     idChat = int(idChat)
     # chat must be already created
-    stop_not_existence(idChat, 'idChat', chats)
+    stop_not_existence(idChat,'idChat', chats)
 
     return dumps(messages.find({'idChat': idChat},
-                               {'datetime':1,'_id':0,'userName':1,
-                               'idMessage':1,'text':1})
+                               {'idChat':1,'datetime':1,'_id':0,
+                               'userName':1,'idMessage':1,'text':1})
                                .sort('idMessage',ASCENDING))
 
-@get('/messages/<idUser>')
+@get('/messages/user/<idUser>')
 def get_messages(idUser):
     '''Get all messages from the specified chat'''
 
     idUser = int(idUser)
     # user must exist in the collection 
-    stop_not_existence(idUser, 'idUser', users)
+    stop_not_existence(idUser,'idUser', users)
 
     return dumps(messages.find({'idUser': idUser},
                                {'datetime':1,'_id':0,
@@ -117,9 +132,9 @@ def get_messages(idUser):
 
 @get('/chat/<idChat>/sentiment')
 def mood_analyzer(idChat):
-    '''Analyze messages from `chat_id` using NLTK's sentiment.'''
+    '''Analyze messages for a chat using NLTK's sentiment.'''
 
-    text = get_text(idChat)
+    text = get_text(idChat,'idChat')
     mood = analyzer(text)
     
     return mood

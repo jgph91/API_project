@@ -24,9 +24,10 @@ db, users = connectCollection('API', 'users')
 db, messages = connectCollection('API', 'messages')
 
 
-def stop_not_existence(new_element, field, collection):
+def stop_not_existence(new_element,field, collection):
     '''check if the element is in the collection'''
 
+    
     if re.search(r'^id',field):#id fields are stored as integers
         new_element = int(new_element)
     check = list(collection.find({field: new_element}))
@@ -35,8 +36,10 @@ def stop_not_existence(new_element, field, collection):
         raise Exception(f'{new_element} doesn\'t exist!')
 
 
-def stop_existence(new_element, field, collection):
+def stop_existence(new_element,field,collection):
     '''check if the element is not in the collection'''
+
+    
 
     if re.search(r'^id',field):#id fields are stored as integers
         new_element = int(new_element)
