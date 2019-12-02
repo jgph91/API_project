@@ -4,6 +4,7 @@ from pymongo import MongoClient,ASCENDING
 from bottle import request, response, post, get, run, route
 from bson.json_util import dumps
 import requests
+import os
 import json
 from src.mongo import connectCollection, stop_existence, stop_not_existence,get_name
 from src.nltk import analyzer,get_text
@@ -145,4 +146,6 @@ def mood_analyzer(idChat):
     
     return mood
 
+port = int(os.getenv('PORT', 8080))
+host = os.getenv('IP','0.0.0.0')
 run(host='0.0.0.0', port=8080, debug=True)
