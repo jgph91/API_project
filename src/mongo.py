@@ -49,7 +49,7 @@ def stop_existence(new_element,field,collection):
 
 def get_name(idUser):
     '''Gives back the user name introducing it's id'''
-
+    idUser = int(idUser)
     name_id = list(users.find({'idUser': idUser}))
     userName = name_id[0]['userName']
     return userName

@@ -15,7 +15,7 @@ db, users = connectCollection('API', 'users')
 db, messages = connectCollection('API', 'messages')
 
 # users endpoints
-@post('/users/<userName>/create')
+@get('/users/<userName>/create')
 def user_creator(userName):
     '''Create a user and save into DB'''
 
@@ -72,7 +72,7 @@ def user_recommender(userName):
     return top3
 
 # chat endpoints
-@post('/chat/create')
+@get('/chat/create')
 def chat_creator():
     '''Create a conversation to load messages'''
     idChat = chats.distinct("idChat")[-1] + 1
@@ -89,24 +89,25 @@ def add_message(idChat, idUser):
     # chat must be already created
     stop_not_existence(idChat,'idChat', chats)
 
-    #text entered via params
     dict(request.forms)
-    datetime=request.forms.get('datetime')
-    text=request.forms.get('text')
+    #text entered via params
+    datetime = request.forms.get('datetime')
+    text = request.forms.get('text')
 
     #getting the user name from the users collection
     userName = get_name(idUser)
-
+    
     new_id = messages.distinct("idMessage")[-1] + 1
-    messages.insert_one({'idUser': new_id,'userName': userName,
-                        'idMessage':new_id,'idChat':idChat,
+    messages.insert_one({'idUser': int(idUser),'userName': userName,
+                        'idMessage':new_id,'idChat':int(idChat),
                         'datetime':datetime,'text':text})
-
-    return (f'Your message has been inserted sucessfully!')
+    
+    return ('Your message has been inserted sucessfully!')
 
 @get('/messages/chat/<idChat>')
 def get_messages(idChat):
     '''Get all messages from the specified chat'''
+
     idChat = int(idChat)
     # chat must be already created
     stop_not_existence(idChat,'idChat', chats)
