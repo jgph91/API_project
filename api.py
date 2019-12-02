@@ -15,12 +15,16 @@ db, users = connectCollection('API', 'users')
 db, messages = connectCollection('API', 'messages')
 
 # users endpoints
-@get('/users/<userName>/create')
-def user_creator(userName):
+@post('/users/create')
+def user_creator():
     '''Create a user and save into DB'''
 
+    #text entered via params
+    dict(request.forms)
+    userName = request.forms.get('userName')
     # user can't be already created
-    stop_existence(userName,'userName', users)
+    stop_existence(userName,'userName', users) 
+    
     #assigning a new id
     new_id = users.distinct("idUser")[-1] + 1
     db.users.insert_one({'idUser': new_id,
@@ -47,14 +51,15 @@ def get_userid(userName):
                             {'_id': 0, 'idUser': 1,
                              'userName': 1}))
 
-@get('users/<idUser>/sentiment')
+@get('/users/<idUser>/sentiment')
 def mood_analyzer_user(idUser):
-    '''Analyze messages for a chat using NLTK's sentiment.'''
+    '''Analyze messages from an user using NLTK's sentiment.'''
 
     # user must be already created
     stop_not_existence(idUser,'idUser', users)
-
+    
     text = get_text(idUser,'idUser')
+    
     mood = analyzer(text)
     
     return mood

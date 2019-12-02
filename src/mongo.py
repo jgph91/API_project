@@ -1,11 +1,13 @@
 from pymongo import MongoClient
-import getpass
 import json
 import os
 import re
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # Get Password
-password = getpass.getpass("Insert your AtlasMongoDB root password: ")
+password = os.getenv('key')
 connection = 'mongodb+srv://root:{}@cluster0-rad7h.mongodb.net/test?retryWrites=true&w=majority'.format(
     password)
 
