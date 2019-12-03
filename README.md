@@ -1,4 +1,4 @@
-# API_project
+# Chat sentiment API
 
 This API has the aim to analyze chats and recommend users that have similar 'sentiment' value.  
 API deployed in heroku https://chat-sentiment-jgph91.herokuapp.com/ !    
@@ -24,13 +24,13 @@ API deployed in heroku https://chat-sentiment-jgph91.herokuapp.com/ !
 
 ## Files included  
 
-api.py -> main file including the api code  
-Dockerfile -> file for creating the container in docker  
-.src/mongo.py -> file including the database functions  
-.src/nltk.py -> file including the nltk functions to perform the sentiment analysis  
-.src/recommender.py -> file including the recommender functions  
-requeriments.txt -> md file containing all the modules used in this program  
-./input/chats.json -> initial chats  
+-api.py -> main file including the api code  
+-Dockerfile -> file for creating the container in docker  
+-.src/mongo.py -> file including the database functions  
+-.src/nltk.py -> file including the nltk functions to perform the sentiment analysis  
+-.src/recommender.py -> file including the recommender functions  
+-requeriments.txt -> md file containing all the modules used in this program  
+-./input/chats.json -> initial chats  
 
 MongoDB Atlas -> database using 3 collections: users,chats and messages
 
