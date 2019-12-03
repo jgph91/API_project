@@ -1,6 +1,7 @@
 # API_project
 
 This API has the aim to analyze chats and recommend users that have similar 'sentiment' value.  
+API deployed in heroku https://chat-sentiment-jgph91.herokuapp.com/ !    
 
 ## Commands  
 

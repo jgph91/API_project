@@ -10,10 +10,16 @@ from src.mongo import connectCollection, stop_existence, stop_not_existence,get_
 from src.nltk import analyzer,get_text
 from src.recommender import get_users_mod, get_messages_user, similarities_matrix,recommendations
 
+
+
 # collections
 db, chats = connectCollection('API', 'chats')
 db, users = connectCollection('API', 'users')
 db, messages = connectCollection('API', 'messages')
+
+@route('/')
+def main():
+    return 'Welcome to my first API! Check my repo in:https://github.com/jgph91/API_project'
 
 # users endpoints
 @post('/users/create')
@@ -29,7 +35,7 @@ def user_creator():
     #assigning a new id
     new_id = users.distinct("idUser")[-1] + 1
     db.users.insert_one({'idUser': new_id,
-                         'userName': userName})
+                        'userName': userName})
 
     return (f'Welcome {userName}!. Your id is {new_id}')
 
@@ -39,7 +45,7 @@ def get_users():
 
     return dumps(users.find({},
                             {'_id': 0, 'idUser': 1,
-                             'userName': 1}))
+                            'userName': 1}))
 
 @get('/users/<userName>')
 def get_userid(userName):
@@ -50,7 +56,7 @@ def get_userid(userName):
 
     return dumps(users.find({'userName': userName},
                             {'_id': 0, 'idUser': 1,
-                             'userName': 1}))
+                            'userName': 1}))
 
 @get('/users/<idUser>/sentiment')
 def mood_analyzer_user(idUser):
@@ -119,9 +125,9 @@ def get_messages(idChat):
     stop_not_existence(idChat,'idChat', chats)
 
     return dumps(messages.find({'idChat': idChat},
-                               {'idChat':1,'datetime':1,'_id':0,
-                               'userName':1,'idMessage':1,'text':1})
-                               .sort('idMessage',ASCENDING))
+                            {'idChat':1,'datetime':1,'_id':0,
+                            'userName':1,'idMessage':1,'text':1})
+                            .sort('idMessage',ASCENDING))
 
 @get('/messages/user/<idUser>')
 def get_messages(idUser):
@@ -132,10 +138,10 @@ def get_messages(idUser):
     stop_not_existence(idUser,'idUser', users)
 
     return dumps(messages.find({'idUser': idUser},
-                               {'datetime':1,'_id':0,
-                               'idChat':1,'userName':1,
-                               'idMessage':1,'text':1})
-                               .sort('idMessage',ASCENDING))
+                            {'datetime':1,'_id':0,
+                            'idChat':1,'userName':1,
+                            'idMessage':1,'text':1})
+                            .sort('idMessage',ASCENDING))
 
 @get('/chat/<idChat>/sentiment')
 def mood_analyzer(idChat):
@@ -146,7 +152,9 @@ def mood_analyzer(idChat):
     
     return mood
 
-if os.environ.get('APP_LOCATION') == 'heroku':
-    run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-else:
-    run(host='localhost', port=8080, debug=True)
+#run(host='localhost', port=8080, debug=True)
+
+port = int(os.getenv("PORT", 8080))
+print(f"Running server {port}....")
+run(host="0.0.0.0", port=port, debug=True)
+
