@@ -1,3 +1,4 @@
+from nltk import download
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from pymongo import MongoClient,ASCENDING
 from src.mongo import connectCollection
@@ -22,6 +23,7 @@ def get_text(id,field):
 def analyzer(text):
     '''Rates the specified text'''
 
+    download('vader_lexicon')
     mood = SentimentIntensityAnalyzer().polarity_scores(text)
 
     return mood
