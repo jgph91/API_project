@@ -18,7 +18,7 @@ The database is in Atlas MongoDB (cloud) and it contains 3 collections: users, c
 ### chats endpoints  
 
 - Start a chat to insert new messages `/chat/create`  
-- Add a message to a chat `/messages/<idChat>/<idUser>/addmessage` *enter date and message via params
+- Add a message to a chat `/messages/<idChat>/<idUser>/addmessage` *enter the message via params
 - Get all the messages from a chat `/messages/chat/<idChat>`
 - Get all the messages from an user `/messages/user/<idUser>`
 - Get the sentiment values from a chat `/chat/<idChat>/sentiment`  
