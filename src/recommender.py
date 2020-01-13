@@ -44,7 +44,6 @@ def similarities_matrix():
     user_messages = {}
 
     for e in all_users:
-        
         userName = e
         text = get_messages_user(e)
         user_messages[userName] = text
